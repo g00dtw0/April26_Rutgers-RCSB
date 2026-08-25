@@ -53,6 +53,11 @@ Everything is a standard Gradle Android project; nothing else is needed.
 Push this branch, then open the repository's **Actions → "Shorts Auto Scroll (Android)"**
 run and download the `shorts-auto-scroll-debug-apk` artifact. That APK is ready to install.
 
+Each run also produces `shorts-auto-scroll-release-apk` — the same app signed with your own
+release key rather than the throwaway debug key — but only once the four signing secrets
+from `PLAY_STORE.md` step 3 exist. A debug-signed build is one of the signals Play Protect
+weighs, so if it refuses the debug APK, the release APK is worth trying.
+
 ### Option B — locally
 
 ```bash
@@ -89,7 +94,7 @@ Read the exact wording before trying things:
 | Message | Cause | Fix |
 |---------|-------|-----|
 | "For your security, your phone isn't allowed to install unknown apps from this source" | the app you tapped the APK from (Files, Chrome, Drive) lacks the permission | Settings → Apps → Special app access → Install unknown apps → pick that app → Allow |
-| "Unsafe app blocked" / "Blocked by Play Protect" | Play Protect's scan of a sideloaded app | tap *More details → Install anyway*; or Play Store → profile → Play Protect → ⚙ → turn off scanning, install, turn it back on |
+| "Unsafe app blocked" / "Blocked by Play Protect" | Play Protect's scan of a sideloaded app | tap *More details → Install anyway*; or Play Store → profile → Play Protect → ⚙ → turn off scanning, install, turn it back on; or install a release-signed APK instead of the debug one |
 | "Blocked by your admin" / a briefcase icon | the device or profile is managed (work profile, MDM, school) | no workaround exists on the managed profile; install on a personal device or an emulator |
 | Anything about the developer not being verified | Google's developer-verification requirement for installs on certified devices | use `adb` (below), an emulator, or register as a verified developer |
 
