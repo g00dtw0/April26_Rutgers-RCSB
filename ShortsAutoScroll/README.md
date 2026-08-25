@@ -81,6 +81,36 @@ installs both). Windows users run `gradlew.bat` instead of `./gradlew`.
 Optional extras in the app: a Quick Settings tile and a floating bubble, both of which
 pause/resume auto scroll without leaving YouTube.
 
+### If the phone refuses to install the APK
+
+Android has several separate blocks, each with a different message and a different fix.
+Read the exact wording before trying things:
+
+| Message | Cause | Fix |
+|---------|-------|-----|
+| "For your security, your phone isn't allowed to install unknown apps from this source" | the app you tapped the APK from (Files, Chrome, Drive) lacks the permission | Settings → Apps → Special app access → Install unknown apps → pick that app → Allow |
+| "Unsafe app blocked" / "Blocked by Play Protect" | Play Protect's scan of a sideloaded app | tap *More details → Install anyway*; or Play Store → profile → Play Protect → ⚙ → turn off scanning, install, turn it back on |
+| "Blocked by your admin" / a briefcase icon | the device or profile is managed (work profile, MDM, school) | no workaround exists on the managed profile; install on a personal device or an emulator |
+| Anything about the developer not being verified | Google's developer-verification requirement for installs on certified devices | use `adb` (below), an emulator, or register as a verified developer |
+
+**The route that avoids most of these** is installing over USB, which does not go through the
+"unknown sources" permission or Play Protect's install prompt:
+
+1. On the phone: Settings → About phone → tap *Build number* seven times → back →
+   System → Developer options → enable **USB debugging**.
+2. On the PC, install Android platform-tools (the `adb` command) and connect the phone by
+   USB, accepting the "Allow USB debugging?" prompt.
+3. ```bash
+   adb install -r app-debug.apk
+   ```
+   `Success` means it is installed. `INSTALL_FAILED_USER_RESTRICTED` means the phone is
+   managed and blocks it; `INSTALL_FAILED_UPDATE_INCOMPATIBLE` means an older copy signed
+   with a different key is present — `adb uninstall io.github.g00dtw0.shortsautoscroll`
+   first.
+
+If none of that is possible on your phone, the emulator route in section 4 has no such
+restrictions and is a complete way to use and test the app.
+
 ### If the accessibility toggle is greyed out ("Restricted setting")
 
 Android 13 and newer block sideloaded apps from being granted accessibility access until
