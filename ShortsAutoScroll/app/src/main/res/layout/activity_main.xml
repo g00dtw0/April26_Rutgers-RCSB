@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+            android:paddingBottom="12dp" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/statusTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:text="@string/status_service_off" />
+
+                <TextView
+                    android:id="@+id/statusHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:text="@string/status_hint_off" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/openAccessibility"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/open_accessibility_settings" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/masterSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/master_switch"
+            android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:text="@string/master_switch_sub" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:text="@string/mode_title" />
+
+        <RadioGroup
+            android:id="@+id/modeGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="4dp">
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/modeSmart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/mode_smart" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="36dp"
+                android:paddingEnd="0dp"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:text="@string/mode_smart_sub" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/modeTimer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/mode_timer" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="36dp"
+                android:paddingEnd="0dp"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:text="@string/mode_timer_sub" />
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/timerLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/timerSlider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stepSize="1"
+            android:valueFrom="3"
+            android:valueTo="60" />
+
+        <TextView
+            android:id="@+id/thresholdLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/thresholdSlider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stepSize="1"
+            android:valueFrom="80"
+            android:valueTo="100" />
+
+        <TextView
+            android:id="@+id/delayLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/delaySlider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stepSize="50"
+            android:valueFrom="0"
+            android:valueTo="2000" />
+
+        <TextView
+            android:id="@+id/maxWatchLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/maxWatchSlider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stepSize="10"
+            android:valueFrom="20"
+            android:valueTo="300" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/pauseAwareSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/opt_pause_aware" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:text="@string/opt_pause_aware_sub" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/respectPanelsSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/opt_respect_panels" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:text="@string/opt_respect_panels_sub" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/overlaySwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/opt_overlay" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:text="@string/opt_overlay_sub" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/hapticSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/opt_haptic" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:text="@string/method_title" />
+
+        <RadioGroup
+            android:id="@+id/methodGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/methodGesture"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/method_gesture" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/methodAction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/method_action" />
+        </RadioGroup>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/openYoutube"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/open_youtube" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/openDiagnostics"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/diagnostics" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:text="@string/about_header" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="4dp"
+            android:paddingBottom="24dp"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:text="@string/about_body" />
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Shorts Auto Scroll</string>
+    <string name="service_label">Shorts Auto Scroll</string>
+    <string name="tile_label">Auto scroll</string>
+
+    <string name="accessibility_service_description">Watches the YouTube app while you are viewing Shorts and swipes to the next Short for you when the current one finishes playing, so you can keep watching hands-free. It reads on-screen content only while the YouTube app is in the foreground, and nothing is ever recorded, stored or sent off the device.</string>
+
+    <string name="status_service_on">Accessibility service: ON</string>
+    <string name="status_service_off">Accessibility service: OFF</string>
+    <string name="status_hint_off">Turn the service on in Android Settings → Accessibility → Installed apps → Shorts Auto Scroll.</string>
+    <string name="status_hint_on">Open YouTube Shorts and the app will swipe for you when a Short ends.</string>
+    <string name="open_accessibility_settings">Open accessibility settings</string>
+
+    <string name="master_switch">Auto scroll enabled</string>
+    <string name="master_switch_sub">Master on/off. Also togglable from the Quick Settings tile or the floating bubble.</string>
+
+    <string name="mode_title">When should it scroll?</string>
+    <string name="mode_smart">Smart — when the Short actually ends</string>
+    <string name="mode_smart_sub">Reads the Shorts progress bar and swipes the moment playback reaches the end (or loops back to the start). Falls back to the fixed timer if no progress bar can be read.</string>
+    <string name="mode_timer">Fixed timer</string>
+    <string name="mode_timer_sub">Always swipe after a set number of seconds.</string>
+
+    <string name="timer_seconds">Fixed timer / fallback: %1$d s</string>
+    <string name="end_threshold">Treat as finished at: %1$d%%</string>
+    <string name="extra_delay">Wait before swiping: %1$d ms</string>
+    <string name="max_watch">Safety cap per Short: %1$d s</string>
+
+    <string name="opt_pause_aware">Do not scroll while paused</string>
+    <string name="opt_pause_aware_sub">If playback progress stops moving, the countdown is put on hold.</string>
+    <string name="opt_respect_panels">Do not scroll while comments are open</string>
+    <string name="opt_respect_panels_sub">Holds off while the comment or share sheet is on screen.</string>
+    <string name="opt_haptic">Vibrate on each scroll</string>
+    <string name="opt_overlay">Floating on/off bubble</string>
+    <string name="opt_overlay_sub">A small draggable button over YouTube. Tap to pause/resume auto scroll. Needs the "display over other apps" permission.</string>
+
+    <string name="method_title">How to scroll</string>
+    <string name="method_gesture">Swipe gesture (most reliable)</string>
+    <string name="method_action">Accessibility scroll action, gesture as fallback</string>
+
+    <string name="open_youtube">Open YouTube Shorts</string>
+    <string name="diagnostics">Diagnostics / tuning</string>
+    <string name="diagnostics_title">Diagnostics</string>
+    <string name="dump_tree">Dump current screen</string>
+    <string name="copy_log">Copy</string>
+    <string name="copied">Copied to clipboard</string>
+    <string name="youtube_missing">The YouTube app was not found on this device.</string>
+    <string name="settings_header">Settings</string>
+    <string name="about_header">Good to know</string>
+    <string name="about_body">This app drives the normal YouTube app through Android\'s accessibility APIs: it never signs in, never downloads video, and never talks to any server. If YouTube changes its layout the "Smart" detection may stop finding the progress bar — the Diagnostics screen shows exactly what is being read, and the fixed timer keeps working regardless.</string>
+</resources>
