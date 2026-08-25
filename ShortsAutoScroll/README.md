@@ -119,12 +119,26 @@ restrictions and is a complete way to use and test the app.
 ### If the accessibility toggle is greyed out ("Restricted setting")
 
 Android 13 and newer block sideloaded apps from being granted accessibility access until
-you explicitly allow it. This is expected and is not a bug in the app:
+you explicitly allow it. Symptoms: the app is listed under Accessibility → Installed apps
+as *"controlled by restricted settings"* (제한된 설정으로 제어됨), and tapping it shows
+*"Restricted setting"* / *"앱의 액세스가 거부됨"* with only a **Close** button. That dialog
+is informational — the grant is made elsewhere:
 
-**Settings → Apps → Shorts Auto Scroll → ⋮ (top-right menu) → Allow restricted settings**
+**Settings → Apps → Shorts Auto Scroll → ⋮ (top-right) → Allow restricted settings**
 
-Then go back to Accessibility and the toggle will work. Installing with
-`adb install -r app-debug.apk` usually avoids the restriction entirely.
+On Korean One UI: **설정 → 애플리케이션 → Shorts Auto Scroll → 우측 상단 ⋮ → 제한된 설정 허용**
+
+Then go back to Accessibility and the toggle works.
+
+If the ⋮ menu has no such entry (it only appears after the restricted dialog has been
+triggered once, and some builds hide it), grant it over USB instead:
+
+```bash
+adb shell appops set io.github.g00dtw0.shortsautoscroll ACCESS_RESTRICTED_SETTINGS allow
+```
+
+Installing with `adb install -r app-debug.apk` in the first place usually avoids the
+restriction entirely, since it does not count as an install from an unknown source.
 
 ### Other things worth knowing on a first run
 
