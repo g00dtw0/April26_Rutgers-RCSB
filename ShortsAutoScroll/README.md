@@ -73,6 +73,31 @@ installs both). Windows users run `gradlew.bat` instead of `./gradlew`.
 Optional extras in the app: a Quick Settings tile and a floating bubble, both of which
 pause/resume auto scroll without leaving YouTube.
 
+### If the accessibility toggle is greyed out ("Restricted setting")
+
+Android 13 and newer block sideloaded apps from being granted accessibility access until
+you explicitly allow it. This is expected and is not a bug in the app:
+
+**Settings → Apps → Shorts Auto Scroll → ⋮ (top-right menu) → Allow restricted settings**
+
+Then go back to Accessibility and the toggle will work. Installing with
+`adb install -r app-debug.apk` usually avoids the restriction entirely.
+
+### Other things worth knowing on a first run
+
+* **Nothing happens at all.** Check *Diagnostics*: "accessibility enabled: true" and
+  "service connected: true" must both be shown. If the service is enabled but not
+  connected, force-stop the app and re-toggle the accessibility switch.
+* **It scrolls, but on a timer rather than at the real end.** The log will say
+  `timer (no progress bar found)`. Use *Dump current screen* while a Short is playing —
+  the view id holding the playback position is what `ShortsProbe.kt` needs to match.
+* **It scrolls twice in a row.** Raise "Wait before swiping" to ~400 ms.
+* **It stops working after the screen has been off a while.** Some manufacturers (Samsung,
+  Xiaomi, Oppo, Huawei) kill accessibility services aggressively. Exempt the app from
+  battery optimisation: Settings → Apps → Shorts Auto Scroll → Battery → Unrestricted.
+* **Detection while the phone is locked** is not a thing — the service only sees YouTube
+  while YouTube is on screen and in the foreground.
+
 ## 4. Installing on a PC
 
 Android apps do not run natively on Windows/macOS/Linux, and Windows Subsystem for Android
