@@ -33,9 +33,12 @@ class Prefs(context: Context) {
         get() = sp.getInt(KEY_THRESHOLD, 98).coerceIn(THRESHOLD_MIN, THRESHOLD_MAX)
         set(value) = sp.edit().putInt(KEY_THRESHOLD, value).apply()
 
-    /** Grace period between "this Short is over" and the swipe itself. */
-    var extraDelayMs: Int
-        get() = sp.getInt(KEY_DELAY, 150).coerceIn(DELAY_MIN, DELAY_MAX)
+    /**
+     * Offset between the end of the Short and the swipe. Negative values swipe early,
+     * which is how you compensate for the swipe animation itself.
+     */
+    var swipeOffsetMs: Int
+        get() = sp.getInt(KEY_DELAY, 0).coerceIn(DELAY_MIN, DELAY_MAX)
         set(value) = sp.edit().putInt(KEY_DELAY, value).apply()
 
     /** Hard upper bound on how long a single Short may be watched. */
@@ -75,7 +78,7 @@ class Prefs(context: Context) {
         const val KEY_METHOD = "method"
         const val KEY_TIMER = "timer_seconds"
         const val KEY_THRESHOLD = "end_threshold"
-        const val KEY_DELAY = "extra_delay_ms"
+        const val KEY_DELAY = "swipe_offset_ms"
         const val KEY_MAX_WATCH = "max_watch_seconds"
         const val KEY_PAUSE_AWARE = "pause_aware"
         const val KEY_RESPECT_PANELS = "respect_panels"
@@ -93,7 +96,7 @@ class Prefs(context: Context) {
         const val TIMER_MAX = 60
         const val THRESHOLD_MIN = 80
         const val THRESHOLD_MAX = 100
-        const val DELAY_MIN = 0
+        const val DELAY_MIN = -500
         const val DELAY_MAX = 2000
         const val MAX_WATCH_MIN = 20
         const val MAX_WATCH_MAX = 300

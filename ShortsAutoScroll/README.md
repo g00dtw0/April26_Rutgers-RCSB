@@ -18,14 +18,22 @@ and uses the first of these signals that the installed YouTube build exposes:
 
 | # | Signal | Precision |
 |---|--------|-----------|
-| 1 | The scrubber's progress reaches the configured threshold (default 98 %) | ±100 ms |
-| 2 | Progress jumps backwards — YouTube looping the Short, i.e. an exact "it just ended" event | exact, but ~0.2 s of the replay is visible |
+| 1 | **Predicted end.** How fast the scrubber advances gives the clip's length; the swipe is then booked for the exact moment it will finish | ±50 ms |
+| 2 | Progress jumps backwards — YouTube looping the Short, i.e. an exact "it just ended" event | backstop; ~0.5 s late |
 | 3 | An `0:07 of 0:31` style label reaches its duration | ±300 ms |
 | 4 | A plain timer (fallback when nothing above can be read) | user-set |
 
+Why prediction rather than just watching for 98 %: YouTube refreshes the scrubber's
+accessibility value only about once a second, so on a 15 s clip the readings step
+`… 0.87 → 0.93 → wrap`. A high threshold is simply never sampled, which leaves the loop as
+the only observable end — and the loop is by definition late. Timing the rate of advance
+sidesteps that entirely, and it adapts automatically to playback-speed changes.
+
 It also knows when **not** to scroll:
 
-* playback is paused (progress stops advancing) — the countdown is put on hold;
+* playback is paused (progress stops advancing) — the countdown is put on hold and any
+  booked swipe is cancelled;
+* the scrubber was dragged — the rate estimate is rebuilt rather than trusted;
 * the comment sheet, share sheet or a text field is open;
 * for ~900 ms after a swipe, so the next Short can settle.
 
@@ -117,8 +125,8 @@ through the accessibility API, not through the mouse.
 | Setting | What it changes |
 |---------|-----------------|
 | Smart / Fixed timer | whether to detect the real end of the Short or just wait N seconds |
-| Treat as finished at | 98 % swipes a hair early (feels seamless); 100 % waits for the loop |
-| Wait before swiping | a deliberate pause between end and swipe |
+| Swipe offset | relative to the end: negative swipes early (cancels out the swipe animation), positive holds on the last frame |
+| Backstop threshold | only used if the rate estimate never becomes reliable |
 | Safety cap | hard maximum time on one Short |
 | How to scroll | gesture swipe (most reliable) or the accessibility scroll action |
 

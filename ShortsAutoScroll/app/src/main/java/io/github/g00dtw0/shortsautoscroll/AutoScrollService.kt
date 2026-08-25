@@ -46,6 +46,11 @@ class AutoScrollService : AccessibilityService() {
     private var sawProgress = false
     private var endDetectedAtMs = 0L
     private var currentPollMs = POLL_IDLE_MS
+    // Baseline for the playback-rate estimate: (progress, watched time) of the first
+    // reading of the current Short.
+    private var baselineProgress = -1f
+    private var baselineWatchedMs = 0L
+    private var pendingScroll: Runnable? = null
     private var lastOverlaySyncMs = 0L
     private var lastOverlayShown = false
 
@@ -122,6 +127,7 @@ class AutoScrollService : AccessibilityService() {
 
     private fun shutdown() {
         Diagnostics.serviceConnected = false
+        pendingScroll = null
         workerHandler?.removeCallbacksAndMessages(null)
         worker?.quitSafely()
         worker = null
@@ -204,6 +210,53 @@ class AutoScrollService : AccessibilityService() {
 
             if (!paused) watchedMs += delta
 
+            // --- playback rate estimate -------------------------------------------------
+            // YouTube only refreshes the scrubber's accessibility value about once a
+            // second, so on a short clip the progress can jump straight from ~0.9 to the
+            // loop without ever reporting a value above the threshold. Measuring how fast
+            // progress advances lets us predict the exact end instead of waiting to
+            // observe it. Watched time excludes pauses, so the estimate survives them.
+            // A jump too large to be normal playback means the user scrubbed; keeping the
+            // old baseline would predict an end that never comes.
+            var seeked = false
+            if (progress != null && lastProgress >= 0f && delta > 0L) {
+                val jump = progress - lastProgress
+                if (jump > 0f && delta / jump < MIN_PLAUSIBLE_DURATION_MS) seeked = true
+            }
+            if (progress != null &&
+                (baselineProgress < 0f || progress < baselineProgress || seeked)
+            ) {
+                if (seeked) cancelPendingScroll("user scrubbed")
+                baselineProgress = progress
+                baselineWatchedMs = watchedMs
+            }
+            var remainingMs: Long? = null
+            if (progress != null && baselineProgress >= 0f) {
+                val deltaProgress = progress - baselineProgress
+                val deltaTime = watchedMs - baselineWatchedMs
+                if (deltaProgress >= MIN_RATE_PROGRESS && deltaTime >= MIN_RATE_MS) {
+                    val rate = deltaProgress / deltaTime
+                    if (rate > 0f) {
+                        remainingMs = ((1f - progress) / rate).toLong()
+                        Diagnostics.logThrottled("rate", 2_000L) {
+                            "est. duration ${(1f / rate).toLong()}ms, ${remainingMs}ms left"
+                        }
+                    }
+                }
+            }
+
+            // A swipe is already booked for the predicted end; only a pause or an opened
+            // panel should call it off.
+            if (pendingScroll != null) {
+                if (paused || (result.panelOpen && prefs.respectPanels)) {
+                    cancelPendingScroll("paused/panel")
+                } else {
+                    if (progress != null) lastProgress = progress
+                    currentPollMs = POLL_ACTIVE_MS
+                    return
+                }
+            }
+
             val threshold = prefs.endThresholdPercent / 100f
             var reason: String? = null
 
@@ -250,15 +303,60 @@ class AutoScrollService : AccessibilityService() {
                     endDetectedAtMs = now
                     Diagnostics.log("end detected: $reason")
                 }
-                if (now - endDetectedAtMs >= prefs.extraDelayMs) {
+                if (now - endDetectedAtMs >= prefs.swipeOffsetMs.coerceAtLeast(0)) {
                     performScroll(root, screen, reason)
                 }
-            } else {
-                endDetectedAtMs = 0L
+                return
+            }
+
+            endDetectedAtMs = 0L
+
+            // Nothing has ended yet, but if the prediction says it will before the next
+            // look, book the swipe for that exact moment rather than sampling for it.
+            if (remainingMs != null && !paused) {
+                val fireIn = remainingMs + prefs.swipeOffsetMs
+                if (fireIn <= SCHEDULE_HORIZON_MS) {
+                    scheduleScroll(
+                        fireIn.coerceAtLeast(0L),
+                        "predicted end (${remainingMs}ms out, offset ${prefs.swipeOffsetMs}ms)"
+                    )
+                }
             }
         } finally {
             ShortsProbe.recycleQuiet(root)
         }
+    }
+
+    /**
+     * Books a swipe for [delayMs] from now. The state is re-checked when it fires, so a
+     * Short that got paused or swiped away in the meantime is not scrolled past.
+     */
+    private fun scheduleScroll(delayMs: Long, reason: String) {
+        cancelPendingScroll("rescheduling")
+        val runnable = Runnable {
+            pendingScroll = null
+            val root = rootInActiveWindow ?: return@Runnable
+            try {
+                if (!prefs.enabled) return@Runnable
+                val screen = windowBounds(root)
+                val state = ShortsProbe.probe(root, screen)
+                if (!state.inShorts) return@Runnable
+                if (state.panelOpen && prefs.respectPanels) return@Runnable
+                performScroll(root, screen, reason)
+            } finally {
+                ShortsProbe.recycleQuiet(root)
+            }
+        }
+        pendingScroll = runnable
+        workerHandler?.postDelayed(runnable, delayMs)
+        Diagnostics.log("swipe booked in ${delayMs}ms: $reason")
+    }
+
+    private fun cancelPendingScroll(why: String) {
+        val runnable = pendingScroll ?: return
+        pendingScroll = null
+        workerHandler?.removeCallbacks(runnable)
+        Diagnostics.log("booked swipe cancelled ($why)")
     }
 
     /** Shows the floating bubble only while YouTube is in the foreground. */
@@ -281,6 +379,9 @@ class AutoScrollService : AccessibilityService() {
         lastProgressChangeMs = SystemClock.elapsedRealtime()
         sawProgress = false
         endDetectedAtMs = 0L
+        baselineProgress = -1f
+        baselineWatchedMs = 0L
+        cancelPendingScroll(why)
     }
 
     // ---------------------------------------------------------------- scroll
@@ -373,6 +474,19 @@ class AutoScrollService : AccessibilityService() {
         private const val LOOP_LOW = 0.30f
         private const val TIME_TEXT_SLACK_MS = 300L
         private const val SWIPE_DURATION_MS = 180L
+
+        /** Minimum span before the playback-rate estimate is trusted. */
+        private const val MIN_RATE_PROGRESS = 0.05f
+        private const val MIN_RATE_MS = 700L
+
+        /** How far ahead a predicted end may be booked. */
+        private const val SCHEDULE_HORIZON_MS = 1_500L
+
+        /**
+         * Progress advancing faster than one full clip per this many milliseconds is read
+         * as a scrub rather than playback.
+         */
+        private const val MIN_PLAUSIBLE_DURATION_MS = 2_000f
         private const val OVERLAY_SYNC_MS = 2_000L
     }
 }

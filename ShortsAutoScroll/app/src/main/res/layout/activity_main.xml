@@ -150,8 +150,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:stepSize="50"
-            android:valueFrom="0"
+            android:valueFrom="-500"
             android:valueTo="2000" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:text="@string/swipe_offset_sub" />
 
         <TextView
             android:id="@+id/maxWatchLabel"

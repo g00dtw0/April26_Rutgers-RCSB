@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import kotlin.math.roundToInt
 import io.github.g00dtw0.shortsautoscroll.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -44,8 +45,8 @@ class MainActivity : AppCompatActivity() {
             binding.thresholdLabel.text = getString(R.string.end_threshold, value.toInt())
         }
         binding.delaySlider.addOnChangeListener { _, value, _ ->
-            prefs.extraDelayMs = value.toInt()
-            binding.delayLabel.text = getString(R.string.extra_delay, value.toInt())
+            prefs.swipeOffsetMs = value.toInt()
+            binding.delayLabel.text = getString(R.string.swipe_offset, value.toInt())
         }
         binding.maxWatchSlider.addOnChangeListener { _, value, _ ->
             prefs.maxWatchSeconds = value.toInt()
@@ -111,9 +112,10 @@ class MainActivity : AppCompatActivity() {
         binding.thresholdLabel.text = getString(R.string.end_threshold, threshold)
 
         // The sliders only accept values that sit on their step grid.
-        val delay = (prefs.extraDelayMs / 50) * 50
-        binding.delaySlider.value = delay.toFloat()
-        binding.delayLabel.text = getString(R.string.extra_delay, delay)
+        val offset = ((prefs.swipeOffsetMs / 50f).roundToInt() * 50)
+            .coerceIn(Prefs.DELAY_MIN, Prefs.DELAY_MAX)
+        binding.delaySlider.value = offset.toFloat()
+        binding.delayLabel.text = getString(R.string.swipe_offset, offset)
 
         val maxWatch = ((prefs.maxWatchSeconds - Prefs.MAX_WATCH_MIN) / 10) * 10 + Prefs.MAX_WATCH_MIN
         binding.maxWatchSlider.value = maxWatch.toFloat()

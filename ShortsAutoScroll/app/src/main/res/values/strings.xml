@@ -17,13 +17,14 @@
 
     <string name="mode_title">When should it scroll?</string>
     <string name="mode_smart">Smart — when the Short actually ends</string>
-    <string name="mode_smart_sub">Reads the Shorts progress bar and swipes the moment playback reaches the end (or loops back to the start). Falls back to the fixed timer if no progress bar can be read.</string>
+    <string name="mode_smart_sub">Reads the Shorts progress bar, measures how fast it advances, and swipes at the predicted end of the clip. Falls back to the fixed timer if no progress bar can be read.</string>
     <string name="mode_timer">Fixed timer</string>
     <string name="mode_timer_sub">Always swipe after a set number of seconds.</string>
 
     <string name="timer_seconds">Fixed timer / fallback: %1$d s</string>
-    <string name="end_threshold">Treat as finished at: %1$d%%</string>
-    <string name="extra_delay">Wait before swiping: %1$d ms</string>
+    <string name="end_threshold">Backstop threshold: %1$d%%</string>
+    <string name="swipe_offset">Swipe offset: %1$d ms</string>
+    <string name="swipe_offset_sub">Relative to the end of the Short. Negative swipes early, which cancels out the swipe animation; positive leaves a pause on the last frame.</string>
     <string name="max_watch">Safety cap per Short: %1$d s</string>
 
     <string name="opt_pause_aware">Do not scroll while paused</string>
